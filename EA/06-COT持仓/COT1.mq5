@@ -1,7 +1,7 @@
 //+------------------------------------------------------------------+
 //|                                                         COT1.mq5 |
-//|                        Copyright 2026, wwwgzpucom |
-//|                     https://one.toexness.com/intl/zh/a/30852 |
+//|                                       Copyright 2026, wwwgzpucom |
+//|                         https://one.toexness.com/intl/zh/a/30852 |
 //+------------------------------------------------------------------+
 #property copyright   "Copyright 2026, wwwgzpucom"
 #property link        "https://one.toexness.com/intl/zh/a/30852"
