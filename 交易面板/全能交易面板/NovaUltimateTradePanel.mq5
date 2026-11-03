@@ -1,3 +1,8 @@
+//+------------------------------------------------------------------+
+//|                                       NovaUltimateTradePanel.mq5 |
+//|                                       Copyright 2026, wwwgzpucom |
+//|                         https://one.toexness.com/intl/zh/a/30852 |
+//+------------------------------------------------------------------+
 
 #include <Trade\PositionInfo.mqh>               // Public Class CPositionInfo
 #include <Trade\SymbolInfo.mqh>                 // Public Class CSymbolInfo
@@ -8,18 +13,13 @@ CTrade         objTrade;
 
 ﻿//+------------------------------------------------------------------+
 //|                                       NovaUltimateTradePanel.mq5 |
-//|                             Copyright 2026, wwwgzpucom |
-//|                                           https://one.toexness.com/intl/zh/a/30852 |
+//|                                       Copyright 2026, wwwgzpucom |
+//|                         https://one.toexness.com/intl/zh/a/30852 |
 //+------------------------------------------------------------------+
 
 #property copyright   "Copyright 2026, wwwgzpucom"
 #property link        "https://one.toexness.com/intl/zh/a/30852"
-#property description "Nova Ultimate Trade Panel offers you the best and convenient trading experience!"
-#property description "GNU General Public License     "
-#property description "Free for personal usage."
-#property description "For commercial project please contact with us"
-#property description "eurousdforexlive@gmail.com"
-#property description "For other developments please visit https://youtube.com/ForexSignals"
+#property description "全能交易面板：快速下单、拖线SL/TP、组单、移动止损、对冲与自动平仓"
 #property version   "1.00"
 
 
