@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                      CEZLSMA.mq5 |
-//|                        Copyright 2026, wwwgzpucom | Exness |
+//|                        Copyright 2026, wwwgzpucom |
 //|                     https://one.toexness.com/intl/zh/a/30852 |
 //+------------------------------------------------------------------+
-#property copyright   "Copyright 2026, wwwgzpucom | Exness https://one.toexness.com/intl/zh/a/30852"
+#property copyright   "Copyright 2026, wwwgzpucom"
 #property link        "https://one.toexness.com/intl/zh/a/30852"
 #property version     "1.6"
 #property description "A Strategy Using Chandelier Exit and ZLSMA Indicators Based on the Heikin Ashi Candles"

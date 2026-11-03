@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                       2MAAOS.mq5 |
-//|                        Copyright 2026, wwwgzpucom | Exness |
+//|                        Copyright 2026, wwwgzpucom |
 //|                     https://one.toexness.com/intl/zh/a/30852 |
 //+------------------------------------------------------------------+
-#property copyright   "Copyright 2026, wwwgzpucom | Exness https://one.toexness.com/intl/zh/a/30852"
+#property copyright   "Copyright 2026, wwwgzpucom"
 #property link        "https://one.toexness.com/intl/zh/a/30852"
 #property version     "1.4"
 #property description "A strategy using two Moving Averages and Andean Oscillator"

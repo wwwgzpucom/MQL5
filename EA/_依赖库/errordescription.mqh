@@ -3,7 +3,7 @@
 //|                        Copyright 2010, MetaQuotes Software Corp. |
 //|                                              http://www.mql5.com |
 //+------------------------------------------------------------------+
-#property copyright   "Copyright 2026, wwwgzpucom | Exness https://one.toexness.com/intl/zh/a/30852"
+#property copyright   "Copyright 2026, wwwgzpucom"
 #property link        "https://one.toexness.com/intl/zh/a/30852"
 #property version   "1.00"
 //+------------------------------------------------------------------+

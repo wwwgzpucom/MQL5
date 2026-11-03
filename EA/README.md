@@ -26,4 +26,6 @@
 
 ## 版权
 
-`Copyright 2026, wwwgzpucom | Exness https://one.toexness.com/intl/zh/a/30852`
+`Copyright 2026, wwwgzpucom`
+
+`#property link`：[https://one.toexness.com/intl/zh/a/30852](https://one.toexness.com/intl/zh/a/30852)

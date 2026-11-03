@@ -2,7 +2,7 @@
 //|                                                            JAson |
 //|    This software is licensed under the MIT https://goo.gl/eyJgHe |
 //+------------------------------------------------------------------+
-#property copyright   "Copyright 2026, wwwgzpucom | Exness https://one.toexness.com/intl/zh/a/30852"
+#property copyright   "Copyright 2026, wwwgzpucom"
 #property version "1.12"
 #property strict
 
