@@ -1,39 +1,26 @@
-# 交易面板（Trading Panel）
+# 交易面板
 
 适用于 **Exness** MetaTrader 5。  
 开户 / 访问：[https://one.toexness.com/intl/zh/a/30852](https://one.toexness.com/intl/zh/a/30852)
 
-图表交易辅助面板：快速下单、风险%、止损止盈、移动止损等，减少手工操作。
+本目录存放各类**交易面板**项目。  
+- **单文件面板**：可直接放 `.mq5`  
+- **多文件面板**（主程序 + Include 等）：各自单独建一个子文件夹
 
-源码整理自原仓库 `MQL_Trading_Panel`（仅保留 MT5 源码 `.mq5` / `.mqh`）。
+## 面板列表
 
-## 文件结构
-
-| 路径 | 说明 |
+| 目录 | 说明 |
 |------|------|
-| `TradingPanel.mq5` | EA 主程序（放到 `MQL5/Experts/`） |
-| `Include/TradingPanel.mqh` | 面板 UI |
-| `Include/TradingAgent.mqh` | 交易代理逻辑 |
-| `Include/TradingHelper.mqh` | 账户/持仓辅助 |
-| `Include/TrailingStop.mqh` | 移动止损 |
+| [`TradingPanel/`](./TradingPanel/) | 图表交易辅助面板（下单 / 风险% / SL·TP / 移动止损） |
 
-## 安装（MT5）
+## 约定
 
-1. 将 `Include/` 下全部 `.mqh` 复制到终端 `MQL5/Include/`
-2. 将 `TradingPanel.mq5` 复制到 `MQL5/Experts/`
-3. 用 MetaEditor 编译 `TradingPanel.mq5`
-4. 在导航器 → EA 中拖到图表
-
-## 主要输入参数
-
-- `risk`：风险百分比
-- `SL` / `TP`：止损 / 止盈（pips）
-- `startSL` / `widthSL`：移动止损启动与步进（pips）
-- `position_handling`：持仓处理方式
-
-## 版权
-
-`Copyright 2026, wwwgzpucom`  
-`#property link`：[https://one.toexness.com/intl/zh/a/30852](https://one.toexness.com/intl/zh/a/30852)
-
-原作者作品基于公开仓库整理；使用前请自行回测与风控，不构成投资建议。
+```
+交易面板/
+  README.md                 # 本索引
+  SomePanel/                # 多文件面板示例
+    README.md
+    SomePanel.mq5
+    Include/...
+  SimplePanel.mq5           # 单文件面板可放根下（可选）
+```
