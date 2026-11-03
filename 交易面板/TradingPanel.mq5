@@ -3,11 +3,6 @@
 //|                                       Copyright 2026, wwwgzpucom |
 //|                         https://one.toexness.com/intl/zh/a/30852 |
 //+------------------------------------------------------------------+
-//+------------------------------------------------------------------+
-//|                                            Discretion Helper.mq5 |
-//|             Copyright 2018, Kashu Yamazaki, All Rights Reserved. |
-//|                                      https://Kashu7100.github.io |
-//+------------------------------------------------------------------+
 #define VERSION "2.20"
 #property copyright   "Copyright 2026, wwwgzpucom"
 #property link        "https://one.toexness.com/intl/zh/a/30852"

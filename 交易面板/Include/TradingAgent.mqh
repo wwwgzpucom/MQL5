@@ -3,11 +3,6 @@
 //|                                       Copyright 2026, wwwgzpucom |
 //|                         https://one.toexness.com/intl/zh/a/30852 |
 //+------------------------------------------------------------------+
-//+------------------------------------------------------------------+
-//|                                                 TradingAgent.mqh |
-//|             Copyright 2018, Kashu Yamazaki, All Rights Reserved. |
-//|                                      https://Kashu7100.github.io |
-//+------------------------------------------------------------------+
 #property copyright   "Copyright 2026, wwwgzpucom"
 #property link        "https://one.toexness.com/intl/zh/a/30852"
 #property strict
