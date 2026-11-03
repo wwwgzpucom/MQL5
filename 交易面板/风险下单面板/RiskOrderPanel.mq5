@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|                                                 TradingPanel.mq5 |
+//|                                               RiskOrderPanel.mq5 |
 //|                                       Copyright 2026, wwwgzpucom |
 //|                         https://one.toexness.com/intl/zh/a/30852 |
 //+------------------------------------------------------------------+
@@ -32,7 +32,7 @@ int OnInit(){
       Alert("Invalid Account Number!");
       return(INIT_FAILED);
    }
-   Panel.Create("Trading Panel ver "+VERSION);
+   Panel.Create("RiskOrderPanel ver "+VERSION);
    Panel.Run();
    
    return(INIT_SUCCEEDED);
