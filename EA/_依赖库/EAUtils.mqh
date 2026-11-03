@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright   "Copyright 2026, wwwgzpucom"
 #property link        "https://one.toexness.com/intl/zh/a/30852"
-#property version   "1.24"
+#property version   "1.25"
 
 #include <errordescription.mqh>
 
@@ -371,27 +371,114 @@ double calcVolume(ENUM_RISK risk_mode, double risk, double in = 0, double sl = 0
 }
 
 //+------------------------------------------------------------------+
-//|                                                                  |
+//| Trade result accepted (OrderSend true is not enough)             |
+//+------------------------------------------------------------------+
+bool IsTradeResultOk(const bool sent, const MqlTradeResult &res) {
+    if (!sent)
+        return false;
+    return (res.retcode == TRADE_RETCODE_DONE ||
+            res.retcode == TRADE_RETCODE_DONE_PARTIAL ||
+            res.retcode == TRADE_RETCODE_PLACED ||
+            res.retcode == TRADE_RETCODE_NO_CHANGES);
+}
+
+//+------------------------------------------------------------------+
+//| SYMBOL_FILLING_* flags — not ORDER_FILLING_* enum values         |
 //+------------------------------------------------------------------+
 bool IsFillingTypeAllowed(string symbol, ENUM_ORDER_TYPE_FILLING fill_type, ENUM_SYMBOL_TRADE_EXECUTION exec_type) {
-    int filling = (int) SymbolInfoInteger(symbol, SYMBOL_FILLING_MODE);
-    return((filling & fill_type & exec_type) == (fill_type & exec_type));
+    const int mode = (int) SymbolInfoInteger(symbol, SYMBOL_FILLING_MODE);
+
+    if (exec_type == SYMBOL_TRADE_EXECUTION_INSTANT || exec_type == SYMBOL_TRADE_EXECUTION_REQUEST)
+        return true;
+
+    if (fill_type == ORDER_FILLING_RETURN)
+        return (exec_type == SYMBOL_TRADE_EXECUTION_EXCHANGE);
+
+    if (fill_type == ORDER_FILLING_FOK)
+        return ((mode & SYMBOL_FILLING_FOK) == SYMBOL_FILLING_FOK);
+    if (fill_type == ORDER_FILLING_IOC)
+        return ((mode & SYMBOL_FILLING_IOC) == SYMBOL_FILLING_IOC);
+    if (fill_type == ORDER_FILLING_BOC)
+        return ((mode & SYMBOL_FILLING_BOC) == SYMBOL_FILLING_BOC);
+    return false;
 }
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 bool IsFillingTypeAllowed(string symbol, ENUM_ORDER_TYPE_FILLING fill_type) {
-    int exec = (int) SymbolInfoInteger(symbol, SYMBOL_TRADE_EXEMODE);
-    if ((exec & SYMBOL_TRADE_EXECUTION_INSTANT) == SYMBOL_TRADE_EXECUTION_INSTANT)
-        exec = SYMBOL_TRADE_EXECUTION_INSTANT;
-    else if ((exec & SYMBOL_TRADE_EXECUTION_MARKET) == SYMBOL_TRADE_EXECUTION_MARKET)
-        exec = SYMBOL_TRADE_EXECUTION_MARKET;
-    else if ((exec & SYMBOL_TRADE_EXECUTION_EXCHANGE) == SYMBOL_TRADE_EXECUTION_EXCHANGE)
-        exec = SYMBOL_TRADE_EXECUTION_EXCHANGE;
-    else if ((exec & SYMBOL_TRADE_EXECUTION_REQUEST) == SYMBOL_TRADE_EXECUTION_REQUEST)
-        exec = SYMBOL_TRADE_EXECUTION_REQUEST;
+    const long exec = SymbolInfoInteger(symbol, SYMBOL_TRADE_EXEMODE);
     return IsFillingTypeAllowed(symbol, fill_type, (ENUM_SYMBOL_TRADE_EXECUTION) exec);
+}
+
+//+------------------------------------------------------------------+
+//| Market/deal filling: prefer IOC (Exness), then FOK, then RETURN  |
+//+------------------------------------------------------------------+
+ENUM_ORDER_TYPE_FILLING ResolveDealFilling(const string symbol, const ENUM_FILLING filling) {
+    if (filling == FILLING_FOK)
+        return ORDER_FILLING_FOK;
+    if (filling == FILLING_IOK)
+        return ORDER_FILLING_IOC;
+    if (filling == FILLING_RETURN)
+        return ORDER_FILLING_RETURN;
+    if (filling == FILLING_BOC)
+        PrintFormat("Warning: BOC is pending-only; falling back to deal filling for %s", symbol);
+
+    if (IsFillingTypeAllowed(symbol, ORDER_FILLING_IOC))
+        return ORDER_FILLING_IOC;
+    if (IsFillingTypeAllowed(symbol, ORDER_FILLING_FOK))
+        return ORDER_FILLING_FOK;
+    if (IsFillingTypeAllowed(symbol, ORDER_FILLING_RETURN))
+        return ORDER_FILLING_RETURN;
+    return ORDER_FILLING_IOC;
+}
+
+//+------------------------------------------------------------------+
+//| Pending filling: prefer RETURN                                   |
+//+------------------------------------------------------------------+
+ENUM_ORDER_TYPE_FILLING ResolvePendingFilling(const string symbol, const ENUM_FILLING filling) {
+    if (filling == FILLING_FOK)
+        return ORDER_FILLING_FOK;
+    if (filling == FILLING_IOK)
+        return ORDER_FILLING_IOC;
+    if (filling == FILLING_BOC)
+        return ORDER_FILLING_BOC;
+    if (filling == FILLING_RETURN)
+        return ORDER_FILLING_RETURN;
+
+    if (IsFillingTypeAllowed(symbol, ORDER_FILLING_RETURN))
+        return ORDER_FILLING_RETURN;
+    if (IsFillingTypeAllowed(symbol, ORDER_FILLING_IOC))
+        return ORDER_FILLING_IOC;
+    if (IsFillingTypeAllowed(symbol, ORDER_FILLING_FOK))
+        return ORDER_FILLING_FOK;
+    return ORDER_FILLING_RETURN;
+}
+
+//+------------------------------------------------------------------+
+//| Alternate deal filling after INVALID_FILL                        |
+//+------------------------------------------------------------------+
+ENUM_ORDER_TYPE_FILLING AlternateDealFilling(const string symbol, const ENUM_ORDER_TYPE_FILLING current) {
+    if (current != ORDER_FILLING_IOC && IsFillingTypeAllowed(symbol, ORDER_FILLING_IOC))
+        return ORDER_FILLING_IOC;
+    if (current != ORDER_FILLING_FOK && IsFillingTypeAllowed(symbol, ORDER_FILLING_FOK))
+        return ORDER_FILLING_FOK;
+    if (current != ORDER_FILLING_RETURN && IsFillingTypeAllowed(symbol, ORDER_FILLING_RETURN))
+        return ORDER_FILLING_RETURN;
+    return current;
+}
+
+//+------------------------------------------------------------------+
+//| Alternate pending filling after INVALID_FILL                     |
+//+------------------------------------------------------------------+
+ENUM_ORDER_TYPE_FILLING AlternatePendingFilling(const string symbol, const ENUM_ORDER_TYPE_FILLING current) {
+    if (current != ORDER_FILLING_RETURN && IsFillingTypeAllowed(symbol, ORDER_FILLING_RETURN))
+        return ORDER_FILLING_RETURN;
+    if (current != ORDER_FILLING_IOC && IsFillingTypeAllowed(symbol, ORDER_FILLING_IOC))
+        return ORDER_FILLING_IOC;
+    if (current != ORDER_FILLING_FOK && IsFillingTypeAllowed(symbol, ORDER_FILLING_FOK))
+        return ORDER_FILLING_FOK;
+    return current;
 }
 
 //+------------------------------------------------------------------+
@@ -451,16 +538,7 @@ bool order(ENUM_ORDER_TYPE ot, ulong magic, double in, double sl = 0, double tp 
     req.magic = magic;
     req.comment = comment;
 
-    if (filling == FILLING_DEFAULT) {
-        if (IsFillingTypeAllowed(name, ORDER_FILLING_FOK)) {
-            req.type_filling = ORDER_FILLING_FOK;
-        } else if (IsFillingTypeAllowed(name, ORDER_FILLING_IOC)) {
-            req.type_filling = ORDER_FILLING_IOC;
-        }
-    } else if (filling == FILLING_FOK) req.type_filling = ORDER_FILLING_FOK;
-    else if (filling == FILLING_IOK) req.type_filling = ORDER_FILLING_IOC;
-    else if (filling == FILLING_BOC) req.type_filling = ORDER_FILLING_FOK;
-    else if (filling == FILLING_RETURN) req.type_filling = ORDER_FILLING_RETURN;
+    req.type_filling = ResolveDealFilling(name, filling);
 
     if (!OrderCheck(req, cres)) {
         if (cres.retcode == TRADE_RETCODE_MARKET_CLOSED) return false;
@@ -469,10 +547,9 @@ bool order(ENUM_ORDER_TYPE ot, ulong magic, double in, double sl = 0, double tp 
             return false;
         }
         if (cres.retcode == TRADE_RETCODE_INVALID_FILL && filling == FILLING_DEFAULT) {
-            if (req.type_filling != ORDER_FILLING_FOK)
-                req.type_filling = ORDER_FILLING_FOK;
-            else
-                req.type_filling = ORDER_FILLING_IOC;
+            const ENUM_ORDER_TYPE_FILLING alt = AlternateDealFilling(name, req.type_filling);
+            if (alt != req.type_filling)
+                req.type_filling = alt;
         }
     }
 
@@ -483,10 +560,20 @@ bool order(ENUM_ORDER_TYPE ot, ulong magic, double in, double sl = 0, double tp 
         os = OrderSend(req, res);
         err = GetLastError();
 
-        if (os && cnt == 1) return true;
-        if (os) {
-            PrintFormat("OrderSend success: iter=%u  retcode=%u  deal=%I64u  order=%I64u  %s", cnt, res.retcode, res.deal, res.order, res.comment);
+        if (IsTradeResultOk(os, res)) {
+            if (cnt > 1)
+                PrintFormat("OrderSend success: iter=%u  retcode=%u  deal=%I64u  order=%I64u  %s", cnt, res.retcode, res.deal, res.order, res.comment);
             return true;
+        }
+
+        if (res.retcode == TRADE_RETCODE_INVALID_FILL && filling == FILLING_DEFAULT) {
+            const ENUM_ORDER_TYPE_FILLING alt = AlternateDealFilling(name, req.type_filling);
+            if (alt != req.type_filling) {
+                req.type_filling = alt;
+                PrintFormat("OrderSend INVALID_FILL → retry filling=%s", EnumToString(alt));
+                cnt++;
+                continue;
+            }
         }
 
         osc = false;
@@ -515,7 +602,7 @@ bool order(ENUM_ORDER_TYPE ot, ulong magic, double in, double sl = 0, double tp 
             else req.price = Bid(name);
         }
 
-    } while (!os && cnt <= nRetry);
+    } while (cnt <= nRetry);
 
     return false;
 }
@@ -554,20 +641,7 @@ bool pendingOrder(ENUM_ORDER_TYPE ot, ulong magic, double in, double sl = 0, dou
     req.type_time = timeType;
     req.expiration = expiration;
 
-    if (filling == FILLING_DEFAULT) {
-        if (IsFillingTypeAllowed(symbol, ORDER_FILLING_FOK)) {
-            req.type_filling = ORDER_FILLING_FOK;
-        } else if (IsFillingTypeAllowed(symbol, ORDER_FILLING_IOC)) {
-            req.type_filling = ORDER_FILLING_IOC;
-        } else if (IsFillingTypeAllowed(symbol, ORDER_FILLING_RETURN)) {
-            req.type_filling = ORDER_FILLING_RETURN;
-        } else if (IsFillingTypeAllowed(symbol, ORDER_FILLING_BOC)) {
-            req.type_filling = ORDER_FILLING_BOC;
-        }
-    } else if (filling == FILLING_FOK) req.type_filling = ORDER_FILLING_FOK;
-    else if (filling == FILLING_IOK) req.type_filling = ORDER_FILLING_IOC;
-    else if (filling == FILLING_BOC) req.type_filling = ORDER_FILLING_BOC;
-    else if (filling == FILLING_RETURN) req.type_filling = ORDER_FILLING_RETURN;
+    req.type_filling = ResolvePendingFilling(symbol, filling);
 
     if (!OrderCheck(req, cres)) {
         if (cres.retcode == TRADE_RETCODE_MARKET_CLOSED) return false;
@@ -576,10 +650,9 @@ bool pendingOrder(ENUM_ORDER_TYPE ot, ulong magic, double in, double sl = 0, dou
             return false;
         }
         if (cres.retcode == TRADE_RETCODE_INVALID_FILL && filling == FILLING_DEFAULT) {
-            if (req.type_filling != ORDER_FILLING_IOC)
-                req.type_filling = ORDER_FILLING_IOC;
-            else
-                req.type_filling = ORDER_FILLING_RETURN;
+            const ENUM_ORDER_TYPE_FILLING alt = AlternatePendingFilling(symbol, req.type_filling);
+            if (alt != req.type_filling)
+                req.type_filling = alt;
         }
     }
 
@@ -590,10 +663,20 @@ bool pendingOrder(ENUM_ORDER_TYPE ot, ulong magic, double in, double sl = 0, dou
         os = OrderSend(req, res);
         err = GetLastError();
 
-        if (os && cnt == 1) return true;
-        if (os) {
-            PrintFormat("PendingOrderSend success: iter=%u  retcode=%u  deal=%I64u  order=%I64u  %s", cnt, res.retcode, res.deal, res.order, res.comment);
+        if (IsTradeResultOk(os, res)) {
+            if (cnt > 1)
+                PrintFormat("PendingOrderSend success: iter=%u  retcode=%u  deal=%I64u  order=%I64u  %s", cnt, res.retcode, res.deal, res.order, res.comment);
             return true;
+        }
+
+        if (res.retcode == TRADE_RETCODE_INVALID_FILL && filling == FILLING_DEFAULT) {
+            const ENUM_ORDER_TYPE_FILLING alt = AlternatePendingFilling(symbol, req.type_filling);
+            if (alt != req.type_filling) {
+                req.type_filling = alt;
+                PrintFormat("PendingOrderSend INVALID_FILL → retry filling=%s", EnumToString(alt));
+                cnt++;
+                continue;
+            }
         }
 
         osc = false;
@@ -612,7 +695,7 @@ bool pendingOrder(ENUM_ORDER_TYPE ot, ulong magic, double in, double sl = 0, dou
         Sleep(mRetry);
         cnt++;
 
-    } while (!os && cnt <= nRetry);
+    } while (cnt <= nRetry);
 
     return false;
 }
@@ -687,24 +770,14 @@ bool closeOrder(ulong ticket, int slippage = 30, int nRetry = 5, int mRetry = 20
         req.type = ORDER_TYPE_BUY;
     }
 
-    if (filling == FILLING_DEFAULT) {
-        if (IsFillingTypeAllowed(psymbol, ORDER_FILLING_FOK)) {
-            req.type_filling = ORDER_FILLING_FOK;
-        } else if (IsFillingTypeAllowed(psymbol, ORDER_FILLING_IOC)) {
-            req.type_filling = ORDER_FILLING_IOC;
-        }
-    } else if (filling == FILLING_FOK) req.type_filling = ORDER_FILLING_FOK;
-    else if (filling == FILLING_IOK) req.type_filling = ORDER_FILLING_IOC;
-    else if (filling == FILLING_BOC) req.type_filling = ORDER_FILLING_FOK;
-    else if (filling == FILLING_RETURN) req.type_filling = ORDER_FILLING_RETURN;
+    req.type_filling = ResolveDealFilling(psymbol, filling);
 
     if (!OrderCheck(req, cres)) {
         if (cres.retcode == TRADE_RETCODE_MARKET_CLOSED) return false;
         if (cres.retcode == TRADE_RETCODE_INVALID_FILL && filling == FILLING_DEFAULT) {
-            if (req.type_filling != ORDER_FILLING_FOK)
-                req.type_filling = ORDER_FILLING_FOK;
-            else
-                req.type_filling = ORDER_FILLING_IOC;
+            const ENUM_ORDER_TYPE_FILLING alt = AlternateDealFilling(psymbol, req.type_filling);
+            if (alt != req.type_filling)
+                req.type_filling = alt;
         }
     }
 
@@ -716,10 +789,20 @@ bool closeOrder(ulong ticket, int slippage = 30, int nRetry = 5, int mRetry = 20
         os = OrderSend(req, res);
         err = GetLastError();
 
-        if (os && cnt == 1) return true;
-        if (os) {
-            PrintFormat("OrderClose success: iter=%u  retcode=%u  deal=%I64u  order=%I64u  %s", cnt, res.retcode, res.deal, res.order, res.comment);
+        if (IsTradeResultOk(os, res)) {
+            if (cnt > 1)
+                PrintFormat("OrderClose success: iter=%u  retcode=%u  deal=%I64u  order=%I64u  %s", cnt, res.retcode, res.deal, res.order, res.comment);
             return true;
+        }
+
+        if (res.retcode == TRADE_RETCODE_INVALID_FILL && filling == FILLING_DEFAULT) {
+            const ENUM_ORDER_TYPE_FILLING alt = AlternateDealFilling(psymbol, req.type_filling);
+            if (alt != req.type_filling) {
+                req.type_filling = alt;
+                PrintFormat("OrderClose INVALID_FILL → retry filling=%s", EnumToString(alt));
+                cnt++;
+                continue;
+            }
         }
 
         osc = false;
@@ -748,7 +831,7 @@ bool closeOrder(ulong ticket, int slippage = 30, int nRetry = 5, int mRetry = 20
             else req.price = Ask(psymbol);
         }
 
-    } while (!os && cnt <= nRetry);
+    } while (cnt <= nRetry);
 
     return false;
 }
@@ -773,9 +856,9 @@ bool closePendingOrder(ulong ticket, int nRetry = 5, int mRetry = 2000) {
         os = OrderSend(req, res);
         err = GetLastError();
 
-        if (os && cnt == 1) return true;
-        if (os) {
-            PrintFormat("PendingOrderClose success: iter=%u  retcode=%u  deal=%I64u  order=%I64u  %s", cnt, res.retcode, res.deal, res.order, res.comment);
+        if (IsTradeResultOk(os, res)) {
+            if (cnt > 1)
+                PrintFormat("PendingOrderClose success: iter=%u  retcode=%u  deal=%I64u  order=%I64u  %s", cnt, res.retcode, res.deal, res.order, res.comment);
             return true;
         }
 
@@ -797,7 +880,7 @@ bool closePendingOrder(ulong ticket, int nRetry = 5, int mRetry = 2000) {
         Sleep(mRetry);
         cnt++;
 
-    } while (!os && cnt <= nRetry);
+    } while (cnt <= nRetry);
 
     return false;
 }
@@ -1190,11 +1273,11 @@ void checkForTrail(ulong magic, double stopLevel = 0.5, double gridStopLevel = 0
                 req.sl = sl;
             }
 
-            if (!OrderSend(req, res)) {
+            if (!OrderSend(req, res) || !IsTradeResultOk(true, res)) {
                 if (res.retcode == TRADE_RETCODE_INVALID_STOPS && pprof - cost > 0)
                     if (closeOrder(pticket, slippage, nRetry, mRetry, filling)) continue;
                 int err = GetLastError();
-                PrintFormat("%s error #%d : %s", __FUNCTION__, err, ErrorDescription(err));
+                PrintFormat("%s error #%d retcode=%u : %s", __FUNCTION__, err, res.retcode, ErrorDescription(err));
             }
         }
 
@@ -1257,14 +1340,14 @@ void checkForTrail(ulong magic, double stopLevel = 0.5, double gridStopLevel = 0
                 req.sl = sl;
             }
 
-            if (!OrderSend(req, res)) {
+            if (!OrderSend(req, res) || !IsTradeResultOk(true, res)) {
                 if (res.retcode == TRADE_RETCODE_INVALID_STOPS && profit - cost > 0) {
                     closeOrders(ptype, pmagic, slippage, psymbol, nRetry, mRetry, filling);
                     Sleep(2000);
                     continue;
                 }
                 int err = GetLastError();
-                PrintFormat("%s (grid) error #%d : %s", __FUNCTION__, err, ErrorDescription(err));
+                PrintFormat("%s (grid) error #%d retcode=%u : %s", __FUNCTION__, err, res.retcode, ErrorDescription(err));
                 continue;
             }
 
@@ -2068,7 +2151,7 @@ int CountDigits(double val, int maxPrecision = 8) {
 //+------------------------------------------------------------------+
 double Ind(int handle, int i, int buffer_index = 0) {
     double B[1];
-    if (handle <= 0) {
+    if (handle == INVALID_HANDLE || handle <= 0) {
         PrintFormat("Error (%s, handle): #%d", __FUNCTION__, GetLastError());
         return -1;
     }
@@ -2077,6 +2160,21 @@ double Ind(int handle, int i, int buffer_index = 0) {
         return -1;
     }
     return B[0];
+}
+
+//+------------------------------------------------------------------+
+//| One-shot handle: CopyBuffer then IndicatorRelease                |
+//+------------------------------------------------------------------+
+double IndOnce(int handle, int i, int buffer_index = 0) {
+    if (handle == INVALID_HANDLE || handle <= 0) {
+        PrintFormat("Error (%s, handle): #%d", __FUNCTION__, GetLastError());
+        return -1;
+    }
+    double v = -1;
+    if (i >= 0)
+        v = Ind(handle, i, buffer_index);
+    IndicatorRelease(handle);
+    return v;
 }
 
 //+------------------------------------------------------------------+

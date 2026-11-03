@@ -76,32 +76,29 @@ input ENUM_FILLING Filling = FILLING_DEFAULT; // Order Filling
 GerEA ea;
 datetime lastCandle;
 datetime tc;
+int AF_handle = INVALID_HANDLE;
+int AOS_handle = INVALID_HANDLE;
+int MD_handle = INVALID_HANDLE;
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-double AF(int i = -1) {
-    int handle = iCustom(NULL, 0, I_AF, AfPeriod, AfSmooth);
-    if (i == -1) return -1;
-    return Ind(handle, i);
+double AF(int i = 0) {
+    return Ind(AF_handle, i);
 }
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-double AOS(ENUM_AOS_BI bi = 0, int i = -1) {
-    int handle = iCustom(NULL, 0, I_AOS, AosPeriod, AosSignalPeriod);
-    if (i == -1) return -1;
-    return Ind(handle, i, bi);
+double AOS(ENUM_AOS_BI bi = 0, int i = 0) {
+    return Ind(AOS_handle, i, bi);
 }
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-double MD(int i = -1) {
-    int handle = iMACD(NULL, 0, MdFast, MdSlow, 1, PRICE_CLOSE);
-    if (i == -1) return -1;
-    return Ind(handle, i);
+double MD(int i = 0) {
+    return Ind(MD_handle, i);
 }
 
 //+------------------------------------------------------------------+
@@ -161,9 +158,14 @@ int OnInit() {
     if (RiskMode == RISK_FIXED_VOL || RiskMode == RISK_MIN_AMOUNT) ea.risk = Risk;
     if (News) fetchCalendarFromYear(NewsStartYear);
 
-    AOS();
-    AF();
-    MD();
+    AF_handle = iCustom(NULL, 0, I_AF, AfPeriod, AfSmooth);
+    AOS_handle = iCustom(NULL, 0, I_AOS, AosPeriod, AosSignalPeriod);
+    MD_handle = iMACD(NULL, 0, MdFast, MdSlow, 1, PRICE_CLOSE);
+
+    if (AF_handle == INVALID_HANDLE || AOS_handle == INVALID_HANDLE || MD_handle == INVALID_HANDLE) {
+        Print("Runtime error = ", GetLastError());
+        return INIT_FAILED;
+    }
 
     EventSetTimer(TimerInterval);
     return INIT_SUCCEEDED;
@@ -174,6 +176,9 @@ int OnInit() {
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason) {
     EventKillTimer();
+    if (AF_handle != INVALID_HANDLE) IndicatorRelease(AF_handle);
+    if (AOS_handle != INVALID_HANDLE) IndicatorRelease(AOS_handle);
+    if (MD_handle != INVALID_HANDLE) IndicatorRelease(MD_handle);
 }
 
 //+------------------------------------------------------------------+

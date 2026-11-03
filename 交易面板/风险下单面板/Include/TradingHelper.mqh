@@ -39,7 +39,22 @@ class TradingHelper: public CAccountInfo{
       void OrderCloseAllSell(void);
    protected:
       long mMagic;
+      ENUM_ORDER_TYPE_FILLING DetectFilling(const string symbol) const;
 };
+
+//+------------------------------------------------------------------+
+ENUM_ORDER_TYPE_FILLING TradingHelper::DetectFilling(const string symbol) const
+{
+   const int mode = (int)SymbolInfoInteger(symbol, SYMBOL_FILLING_MODE);
+   if((mode & SYMBOL_FILLING_IOC) == SYMBOL_FILLING_IOC)
+      return ORDER_FILLING_IOC;
+   if((mode & SYMBOL_FILLING_FOK) == SYMBOL_FILLING_FOK)
+      return ORDER_FILLING_FOK;
+   const long exe = SymbolInfoInteger(symbol, SYMBOL_TRADE_EXEMODE);
+   if(exe != SYMBOL_TRADE_EXECUTION_MARKET)
+      return ORDER_FILLING_RETURN;
+   return ORDER_FILLING_IOC;
+}
 
 TradingHelper::TradingHelper(long magic){
    THInit(magic);
@@ -164,13 +179,14 @@ void TradingHelper::ModifyOrderSL(ulong  ticket, double sl){
    MqlTradeResult result={0};
    if(PositionSelectByTicket(ticket)){
       string position_symbol = PositionGetString(POSITION_SYMBOL);
-      int    digits = (int)SymbolInfoInteger(position_symbol,SYMBOL_DIGITS); 
+      int    digits = (int)SymbolInfoInteger(position_symbol,SYMBOL_DIGITS);
+      const double keepTp = PositionGetDouble(POSITION_TP);
       request.position  = ticket;
       request.action    = TRADE_ACTION_SLTP;
       request.symbol    = position_symbol;
       request.sl        = NormalizeDouble(sl,digits);
-      request.tp        = 0;
-      request.magic     = mMagic; 
+      request.tp        = NormalizeDouble(keepTp, digits);
+      request.magic     = mMagic;
       if(!OrderSend(request,result))
          PrintFormat("OrderSend error %d",GetLastError());
       PrintFormat("retcode=%u  deal=%I64u  order=%I64u",result.retcode,result.deal,result.order);
@@ -192,7 +208,7 @@ void TradingHelper::OrderBuy(double volume=0.1, int deviation=3, double sl=0, do
    request.symbol       = _Symbol;
    request.volume       = fmin(fmax(volume, SymbolInfoDouble(_Symbol,SYMBOL_VOLUME_MIN)), SymbolInfoDouble(_Symbol,SYMBOL_VOLUME_MAX));
    request.price        = SymbolInfoDouble(_Symbol,SYMBOL_ASK);
-   request.type_filling = ORDER_FILLING_IOC;
+   request.type_filling = DetectFilling(request.symbol);
    request.deviation    = deviation;
    request.type         = ORDER_TYPE_BUY;
    MqlTick mTick;
@@ -213,7 +229,7 @@ void TradingHelper::OrderSell(double volume=0.1, int deviation=3, double sl=0, d
    request.symbol       = _Symbol;
    request.volume       = fmin(fmax(volume, SymbolInfoDouble(_Symbol,SYMBOL_VOLUME_MIN)), SymbolInfoDouble(_Symbol,SYMBOL_VOLUME_MAX));
    request.price        = SymbolInfoDouble(_Symbol,SYMBOL_BID);
-   request.type_filling = ORDER_FILLING_IOC;
+   request.type_filling = DetectFilling(request.symbol);
    request.deviation    = deviation;
    request.type         = ORDER_TYPE_SELL;
    MqlTick mTick;
@@ -302,7 +318,7 @@ void TradingHelper::OrderClose(ulong ticket){
       if(type==POSITION_TYPE_BUY && position_symbol==_Symbol){
          request.price  = SymbolInfoDouble(position_symbol,SYMBOL_BID);
          request.type   = ORDER_TYPE_SELL;
-         request.type_filling = ORDER_FILLING_IOC;
+         request.type_filling = DetectFilling(request.symbol);
          if(!OrderSend(request,result))
             PrintFormat("OrderSend error %d",GetLastError());
          PrintFormat("retcode=%u  deal=%I64u  order=%I64u",result.retcode,result.deal,result.order);
@@ -311,7 +327,7 @@ void TradingHelper::OrderClose(ulong ticket){
       if(type==POSITION_TYPE_SELL && position_symbol==_Symbol){
          request.price  = SymbolInfoDouble(position_symbol,SYMBOL_ASK);
          request.type   = ORDER_TYPE_BUY;
-         request.type_filling = ORDER_FILLING_IOC;
+         request.type_filling = DetectFilling(request.symbol);
          if(!OrderSend(request,result))
             PrintFormat("OrderSend error %d",GetLastError());
          PrintFormat("retcode=%u  deal=%I64u  order=%I64u",result.retcode,result.deal,result.order);
@@ -341,7 +357,7 @@ void TradingHelper::OrderCloseAllBuy(void){
       if(type==POSITION_TYPE_BUY && position_symbol==_Symbol){
          request.price  = SymbolInfoDouble(position_symbol,SYMBOL_BID);
          request.type   = ORDER_TYPE_SELL;
-         request.type_filling = ORDER_FILLING_IOC;
+         request.type_filling = DetectFilling(request.symbol);
          if(!OrderSend(request,result))
             PrintFormat("OrderSend error %d",GetLastError());
          PrintFormat("retcode=%u  deal=%I64u  order=%I64u",result.retcode,result.deal,result.order);
@@ -371,7 +387,7 @@ void TradingHelper::OrderCloseAllSell(void){
       if(type==POSITION_TYPE_SELL && position_symbol==_Symbol){
          request.price  = SymbolInfoDouble(position_symbol,SYMBOL_ASK);
          request.type   = ORDER_TYPE_BUY;
-         request.type_filling = ORDER_FILLING_IOC;
+         request.type_filling = DetectFilling(request.symbol);
          if(!OrderSend(request,result))
             PrintFormat("OrderSend error %d",GetLastError());
          PrintFormat("retcode=%u  deal=%I64u  order=%I64u",result.retcode,result.deal,result.order);
@@ -401,12 +417,12 @@ void TradingHelper::OrderCloseAll(void){
       if(type==POSITION_TYPE_BUY && position_symbol==_Symbol){
          request.price  = SymbolInfoDouble(position_symbol,SYMBOL_BID);
          request.type   = ORDER_TYPE_SELL;
-         request.type_filling = ORDER_FILLING_IOC;
+         request.type_filling = DetectFilling(request.symbol);
       }
       else if(type==POSITION_TYPE_SELL && position_symbol==_Symbol){
          request.price  = SymbolInfoDouble(position_symbol,SYMBOL_ASK);
          request.type   = ORDER_TYPE_BUY;
-         request.type_filling = ORDER_FILLING_IOC;
+         request.type_filling = DetectFilling(request.symbol);
       }
       if(!OrderSend(request,result))
          PrintFormat("OrderSend error %d",GetLastError());

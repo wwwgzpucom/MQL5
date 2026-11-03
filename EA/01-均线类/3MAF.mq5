@@ -149,6 +149,10 @@ int OnInit() {
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason) {
     EventKillTimer();
+    if (MA1_handle != INVALID_HANDLE) IndicatorRelease(MA1_handle);
+    if (MA2_handle != INVALID_HANDLE) IndicatorRelease(MA2_handle);
+    if (MA3_handle != INVALID_HANDLE) IndicatorRelease(MA3_handle);
+    if (FR_handle != INVALID_HANDLE) IndicatorRelease(FR_handle);
 }
 
 //+------------------------------------------------------------------+

@@ -166,6 +166,9 @@ int OnInit() {
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason) {
     EventKillTimer();
+    if (HA_handle != INVALID_HANDLE) IndicatorRelease(HA_handle);
+    if (CE_handle != INVALID_HANDLE) IndicatorRelease(CE_handle);
+    if (ZL_handle != INVALID_HANDLE) IndicatorRelease(ZL_handle);
 }
 
 //+------------------------------------------------------------------+

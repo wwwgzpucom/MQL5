@@ -185,6 +185,8 @@ int OnInit() {
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason) {
     EventKillTimer();
+    if (LRC_handle != INVALID_HANDLE) IndicatorRelease(LRC_handle);
+    if (UTB_handle != INVALID_HANDLE) IndicatorRelease(UTB_handle);
 }
 
 //+------------------------------------------------------------------+

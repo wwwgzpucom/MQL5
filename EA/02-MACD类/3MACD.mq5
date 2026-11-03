@@ -273,6 +273,9 @@ int OnInit() {
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason) {
     EventKillTimer();
+    if (M1_handle != INVALID_HANDLE) IndicatorRelease(M1_handle);
+    if (M2_handle != INVALID_HANDLE) IndicatorRelease(M2_handle);
+    if (M3_handle != INVALID_HANDLE) IndicatorRelease(M3_handle);
 }
 
 //+------------------------------------------------------------------+

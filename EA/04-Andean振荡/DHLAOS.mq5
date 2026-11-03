@@ -195,6 +195,8 @@ int OnInit() {
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason) {
     EventKillTimer();
+    if (AOS_handle != INVALID_HANDLE) IndicatorRelease(AOS_handle);
+    if (DHL_handle != INVALID_HANDLE) IndicatorRelease(DHL_handle);
 }
 
 //+------------------------------------------------------------------+

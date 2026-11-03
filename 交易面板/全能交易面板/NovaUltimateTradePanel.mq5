@@ -4946,6 +4946,8 @@ int OnInit()
 //ExtDialog.Create(0, N[Dialog], 0, XY[Dialog][X1], XY[Dialog][Y1], XY[Dialog][X2], XY[Dialog][Y2]);
    ExtDialog.Run();
    ExtDialog.runx();
+   objTrade.SetDeviationInPoints(30);
+   objTrade.SetTypeFillingBySymbol(_Symbol);
    ExtDialog.InfoPosCounterRes();
    ExtDialog.InfoOrderCounterRes();
    if(PanelScreenController==1)
@@ -5113,6 +5115,7 @@ void Sell(double _volume=0.01,double SL=0.00,double TP=0.00,int ordertype=0,doub
       //Print(xsymbol);
       if(groupopenrun=="OFF" || (groupopenrun=="ON" && comboboxstringVALUE=="SELECT"))
         {
+         objTrade.SetTypeFillingBySymbol(symbol);
          bool canSell=objTrade.Sell(volume,symbol,open_price,SL,TP,comment);
          if(!canSell)
            {
@@ -5134,42 +5137,49 @@ void Sell(double _volume=0.01,double SL=0.00,double TP=0.00,int ordertype=0,doub
          //nzdusd-
          //(comboboxstring=="USD GROUP")
 
+         objTrade.SetTypeFillingBySymbol("EURUSD");
          bool canBuy1=objTrade.Buy(volume,"EURUSD",open_price,SL,TP,comment);
          if(!canBuy1)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("GBPUSD");
          bool canBuy2=objTrade.Buy(volume,"GBPUSD",open_price,SL,TP,comment);
          if(!canBuy2)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("USDCHF");
          bool canSell1=objTrade.Sell(volume,"USDCHF",open_price,SL,TP,comment);
          if(!canSell1)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("USDJPY");
          bool canSell2=objTrade.Sell(volume,"USDJPY",open_price,SL,TP,comment);
          if(!canSell2)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("USDCAD");
          bool canSell3=objTrade.Sell(volume,"USDCAD",open_price,SL,TP,comment);
          if(!canSell3)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("AUDUSD");
          bool canBuy3=objTrade.Buy(volume,"AUDUSD",open_price,SL,TP,comment);
          if(!canBuy3)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("NZDUSD");
          bool canBuy4=objTrade.Buy(volume,"NZDUSD",open_price,SL,TP,comment);
          if(!canBuy4)
            {
@@ -5192,42 +5202,49 @@ void Sell(double _volume=0.01,double SL=0.00,double TP=0.00,int ordertype=0,doub
          //eurnzd-
          //(comboboxstring=="USD GROUP")
 
+         objTrade.SetTypeFillingBySymbol("EURUSD");
          bool canSell=objTrade.Sell(volume,"EURUSD",open_price,SL,TP,comment);
          if(!canSell)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURCHF");
          bool canSell1=objTrade.Sell(volume,"EURCHF",open_price,SL,TP,comment);
          if(!canSell1)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURJPY");
          bool canSell2=objTrade.Sell(volume,"EURJPY",open_price,SL,TP,comment);
          if(!canSell2)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURGBP");
          bool canSell3=objTrade.Sell(volume,"EURGBP",open_price,SL,TP,comment);
          if(!canSell3)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURCAD");
          bool canSell4=objTrade.Sell(volume,"EURCAD",open_price,SL,TP,comment);
          if(!canSell4)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURAUD");
          bool canSell5=objTrade.Sell(volume,"EURAUD",open_price,SL,TP,comment);
          if(!canSell5)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURNZD");
          bool canSell6=objTrade.Sell(volume,"EURNZD",open_price,SL,TP,comment);
          if(!canSell6)
            {
@@ -5249,42 +5266,49 @@ void Sell(double _volume=0.01,double SL=0.00,double TP=0.00,int ordertype=0,doub
          //GBPAUD+
          //(comboboxstring=="USD GROUP")
 
+         objTrade.SetTypeFillingBySymbol("GBPUSD");
          bool canSell=objTrade.Sell(volume,"GBPUSD",open_price,SL,TP,comment);
          if(!canSell)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURGBP");
          bool canBuy11=objTrade.Buy(volume,"EURGBP",open_price,SL,TP,comment);
          if(!canBuy11)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("GBPCHF");
          bool canSell2=objTrade.Sell(volume,"GBPCHF",open_price,SL,TP,comment);
          if(!canSell2)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("GBPJPY");
          bool canSell3=objTrade.Sell(volume,"GBPJPY",open_price,SL,TP,comment);
          if(!canSell3)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("GBPNZD");
          bool canSell4=objTrade.Sell(volume,"GBPNZD",open_price,SL,TP,comment);
          if(!canSell4)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("GBPCAD");
          bool canSell5=objTrade.Sell(volume,"GBPCAD",open_price,SL,TP,comment);
          if(!canSell5)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("GBPAUD");
          bool canSell6=objTrade.Sell(volume,"GBPAUD",open_price,SL,TP,comment);
          if(!canSell6)
            {
@@ -5299,6 +5323,7 @@ void Sell(double _volume=0.01,double SL=0.00,double TP=0.00,int ordertype=0,doub
      }
    if(ordertype==1)
      {
+      objTrade.SetTypeFillingBySymbol(_Symbol);
       bool canSell=objTrade.SellLimit(volume,pricependinga,symbol,SL,TP,0,0,comment);
       if(!canSell)
         {
@@ -5309,6 +5334,7 @@ void Sell(double _volume=0.01,double SL=0.00,double TP=0.00,int ordertype=0,doub
      }
    if(ordertype==2)
      {
+      objTrade.SetTypeFillingBySymbol(_Symbol);
       bool canSell=objTrade.SellStop(volume,pricependinga,symbol,SL,TP,0,0,comment);
       if(!canSell)
         {
@@ -5355,6 +5381,7 @@ void Buy(double _volume=0.01,double SL=0.00,double TP=0.00,int ordertype=0,doubl
       if(groupopenrun=="OFF" || (groupopenrun=="ON" && comboboxstringVALUE=="SELECT"))
         {
          //Print(xsymbol);
+         objTrade.SetTypeFillingBySymbol(xsymbol);
          bool canBuy=objTrade.Buy(volume,xsymbol,open_price,SL,TP,comment);
          if(!canBuy)
            {
@@ -5374,42 +5401,49 @@ void Buy(double _volume=0.01,double SL=0.00,double TP=0.00,int ordertype=0,doubl
          //nzdusd-
          //(comboboxstring=="USD GROUP")
 
+         objTrade.SetTypeFillingBySymbol("EURUSD");
          bool canSell1=objTrade.Sell(volume,"EURUSD",open_price,SL,TP,comment);
          if(!canSell1)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("GBPUSD");
          bool canSell2=objTrade.Sell(volume,"GBPUSD",open_price,SL,TP,comment);
          if(!canSell2)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("USDCHF");
          bool canBuy1=objTrade.Buy(volume,"USDCHF",open_price,SL,TP,comment);
          if(!canBuy1)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("USDJPY");
          bool canBuy2=objTrade.Buy(volume,"USDJPY",open_price,SL,TP,comment);
          if(!canBuy2)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("USDCAD");
          bool canBuy3=objTrade.Buy(volume,"USDCAD",open_price,SL,TP,comment);
          if(!canBuy3)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("AUDUSD");
          bool canSell3=objTrade.Sell(volume,"AUDUSD",open_price,SL,TP,comment);
          if(!canSell3)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("NZDUSD");
          bool canSell4=objTrade.Sell(volume,"NZDUSD",open_price,SL,TP,comment);
          if(!canSell4)
            {
@@ -5432,42 +5466,49 @@ void Buy(double _volume=0.01,double SL=0.00,double TP=0.00,int ordertype=0,doubl
          //eurnzd-
          //(comboboxstring=="USD GROUP")
 
+         objTrade.SetTypeFillingBySymbol("EURUSD");
          bool canBuy=objTrade.Buy(volume,"EURUSD",open_price,SL,TP,comment);
          if(!canBuy)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURCHF");
          bool canBuy1=objTrade.Buy(volume,"EURCHF",open_price,SL,TP,comment);
          if(!canBuy1)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURJPY");
          bool canBuy2=objTrade.Buy(volume,"EURJPY",open_price,SL,TP,comment);
          if(!canBuy2)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURGBP");
          bool canBuy3=objTrade.Buy(volume,"EURGBP",open_price,SL,TP,comment);
          if(!canBuy3)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURCAD");
          bool canBuy4=objTrade.Buy(volume,"EURCAD",open_price,SL,TP,comment);
          if(!canBuy4)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURAUD");
          bool canBuy5=objTrade.Buy(volume,"EURAUD",open_price,SL,TP,comment);
          if(!canBuy5)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURNZD");
          bool canBuy6=objTrade.Buy(volume,"EURNZD",open_price,SL,TP,comment);
          if(!canBuy6)
            {
@@ -5489,42 +5530,49 @@ void Buy(double _volume=0.01,double SL=0.00,double TP=0.00,int ordertype=0,doubl
          //GBPAUD+
          //(comboboxstring=="USD GROUP")
 
+         objTrade.SetTypeFillingBySymbol("GBPUSD");
          bool canBuy=objTrade.Buy(volume,"GBPUSD",open_price,SL,TP,comment);
          if(!canBuy)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("EURGBP");
          bool canSell11=objTrade.Sell(volume,"EURGBP",open_price,SL,TP,comment);
          if(!canSell11)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("GBPCHF");
          bool canBuy2=objTrade.Buy(volume,"GBPCHF",open_price,SL,TP,comment);
          if(!canBuy2)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("GBPJPY");
          bool canBuy3=objTrade.Buy(volume,"GBPJPY",open_price,SL,TP,comment);
          if(!canBuy3)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("GBPNZD");
          bool canBuy4=objTrade.Buy(volume,"GBPNZD",open_price,SL,TP,comment);
          if(!canBuy4)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("GBPCAD");
          bool canBuy5=objTrade.Buy(volume,"GBPCAD",open_price,SL,TP,comment);
          if(!canBuy5)
            {
             Print("Fail Buy() method. Return code=",objTrade.ResultRetcode(),
                   ". error message: ",objTrade.ResultRetcodeDescription());
            }
+         objTrade.SetTypeFillingBySymbol("GBPAUD");
          bool canBuy6=objTrade.Buy(volume,"GBPAUD",open_price,SL,TP,comment);
          if(!canBuy6)
            {
@@ -5539,6 +5587,7 @@ void Buy(double _volume=0.01,double SL=0.00,double TP=0.00,int ordertype=0,doubl
      }
    if(ordertype==1)
      {
+      objTrade.SetTypeFillingBySymbol(_Symbol);
       bool canBuy=objTrade.BuyLimit(volume,pricependinga,symbol,SL,TP,0,0,comment);
       if(!canBuy)
         {
@@ -5549,6 +5598,7 @@ void Buy(double _volume=0.01,double SL=0.00,double TP=0.00,int ordertype=0,doubl
 
    if(ordertype==2)
      {
+      objTrade.SetTypeFillingBySymbol(_Symbol);
       bool canBuy=objTrade.BuyStop(volume,pricependinga,symbol,SL,TP,0,0,comment);
       if(!canBuy)
         {
@@ -5620,6 +5670,7 @@ void TraillingRunner()
                     {
                      if((objPosition.StopLoss()<objPosition.PriceCurrent()-(ExtTrailingStop+ExtTrailingStep)) && (objPosition.StopLoss()!=0.0))
                        {
+                        objTrade.SetTypeFillingBySymbol(_Symbol);
                         if(!objTrade.PositionModify(objPosition.Ticket(),NormalizeDouble(objPosition.PriceCurrent()-ExtTrailingStop,xdigits),objPosition.TakeProfit()))
                           {
                            //Print("Modify ",objPosition.Ticket()," Position -> false. Result Retcode: ",objTrade.ResultRetcode(),", description of result: ",objTrade.ResultRetcodeDescription());
@@ -5636,6 +5687,7 @@ void TraillingRunner()
                     {
                      if((objPosition.StopLoss()>(objPosition.PriceCurrent()+(ExtTrailingStop+ExtTrailingStep))) && (objPosition.StopLoss()!=0.0))
                        {
+                        objTrade.SetTypeFillingBySymbol(_Symbol);
                         if(!objTrade.PositionModify(objPosition.Ticket(),NormalizeDouble(objPosition.PriceCurrent()+ExtTrailingStop,xdigits),objPosition.TakeProfit()))
                           {
                            Alert("Position Modify Error On Trailling Stop, Check Settings or Contact Us Developer");
@@ -5713,6 +5765,7 @@ void TraillingRunner()
                     {
                      if((objPosition.StopLoss()<objPosition.PriceCurrent()-(ExtTrailingStop+ExtTrailingStep)) && (objPosition.StopLoss()!=0.0))
                        {
+                        objTrade.SetTypeFillingBySymbol(_Symbol);
                         if(!objTrade.PositionModify(objPosition.Ticket(),NormalizeDouble(objPosition.PriceCurrent()-ExtTrailingStop,xdigits),objPosition.TakeProfit()))
                           {
                            //Print("Modify ",objPosition.Ticket()," Position -> false. Result Retcode: ",objTrade.ResultRetcode(),", description of result: ",objTrade.ResultRetcodeDescription());
@@ -5729,6 +5782,7 @@ void TraillingRunner()
                     {
                      if((objPosition.StopLoss()>(objPosition.PriceCurrent()+(ExtTrailingStop+ExtTrailingStep))) && (objPosition.StopLoss()!=0.0))
                        {
+                        objTrade.SetTypeFillingBySymbol(_Symbol);
                         if(!objTrade.PositionModify(objPosition.Ticket(),NormalizeDouble(objPosition.PriceCurrent()+ExtTrailingStop,xdigits),objPosition.TakeProfit()))
                           {
                            Alert("Position Modify Error On Trailling Stop, Check Settings or Contact Us Developer");
@@ -5821,6 +5875,7 @@ void TraillingLogger()
 //+------------------------------------------------------------------+
 bool ClosePosition(ulong ticket=0)
   {
+   objTrade.SetTypeFillingBySymbol(_Symbol);
    return objTrade.PositionClose(ticket);
   }
 //+------------------------------------------------------------------+

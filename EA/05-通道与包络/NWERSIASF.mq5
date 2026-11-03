@@ -71,32 +71,46 @@ input ENUM_FILLING Filling = FILLING_DEFAULT; // Order Filling
 GerEA ea;
 datetime tc;
 string symbols[];
+int NWE_handles[];
+int RSI_handles[];
+int ASF_handles[];
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-double NWE(string symbol, int bi = 0, int i = -1) {
-    int handle = iCustom(symbol, 0, I_NWE, NweBandWidth, NweMultiplier, NweWindowSize);
-    if (i == -1) return -1;
-    return Ind(handle, i, bi);
+int FindSymbolIndex(const string symbol) {
+    const int n = ArraySize(symbols);
+    for (int i = 0; i < n; i++)
+        if (symbols[i] == symbol)
+            return i;
+    return -1;
 }
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-double RSI(string symbol, int i = -1) {
-    int handle = iRSI(symbol, 0, RsiLength, PRICE_CLOSE);
-    if (i == -1) return -1;
-    return Ind(handle, i);
+double NWE(string symbol, int bi = 0, int i = 0) {
+    const int idx = FindSymbolIndex(symbol);
+    if (idx < 0) return -1;
+    return Ind(NWE_handles[idx], i, bi);
 }
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-double ASF(string symbol, int bi = 0, int i = -1) {
-    int handle = iCustom(symbol, 0, I_ASF, AsfLength, AsfMultiplier);
-    if (i == -1) return -1;
-    return Ind(handle, i, bi);
+double RSI(string symbol, int i = 0) {
+    const int idx = FindSymbolIndex(symbol);
+    if (idx < 0) return -1;
+    return Ind(RSI_handles[idx], i);
+}
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+double ASF(string symbol, int bi = 0, int i = 0) {
+    const int idx = FindSymbolIndex(symbol);
+    if (idx < 0) return -1;
+    return Ind(ASF_handles[idx], i, bi);
 }
 
 
@@ -141,15 +155,15 @@ void CheckForSignal() {
             double sl = asfDn;
             double tp = in + TPCoef * MathAbs(in - sl);
             ea.BuyOpen(in, sl, tp, IgnoreSL, IgnoreTP, s);
-            Sleep(5000);
+            return;
         }
 
-        else if (sc) {
+        if (sc) {
             double in = Bid(s);
             double sl = asfUp;
             double tp = in - TPCoef * MathAbs(in - sl);
             ea.SellOpen(in, sl, tp, IgnoreSL, IgnoreTP, s);
-            Sleep(5000);
+            return;
         }
 
     }
@@ -182,11 +196,18 @@ int OnInit() {
     fillSymbols(symbols, MultipleSymbol, Symbols);
 
     int n = ArraySize(symbols);
+    ArrayResize(NWE_handles, n);
+    ArrayResize(RSI_handles, n);
+    ArrayResize(ASF_handles, n);
     for (int i = 0; i < n; i++) {
         string s = symbols[i];
-        NWE(s);
-        RSI(s);
-        ASF(s);
+        NWE_handles[i] = iCustom(s, 0, I_NWE, NweBandWidth, NweMultiplier, NweWindowSize);
+        RSI_handles[i] = iRSI(s, 0, RsiLength, PRICE_CLOSE);
+        ASF_handles[i] = iCustom(s, 0, I_ASF, AsfLength, AsfMultiplier);
+        if (NWE_handles[i] == INVALID_HANDLE || RSI_handles[i] == INVALID_HANDLE || ASF_handles[i] == INVALID_HANDLE) {
+            PrintFormat("Runtime error creating handles for %s = %d", s, GetLastError());
+            return INIT_FAILED;
+        }
     }
 
     EventSetTimer(TimerInterval);
@@ -198,6 +219,12 @@ int OnInit() {
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason) {
     EventKillTimer();
+    const int n = ArraySize(NWE_handles);
+    for (int i = 0; i < n; i++) {
+        if (NWE_handles[i] != INVALID_HANDLE) IndicatorRelease(NWE_handles[i]);
+        if (RSI_handles[i] != INVALID_HANDLE) IndicatorRelease(RSI_handles[i]);
+        if (ASF_handles[i] != INVALID_HANDLE) IndicatorRelease(ASF_handles[i]);
+    }
 }
 
 //+------------------------------------------------------------------+

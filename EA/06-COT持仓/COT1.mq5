@@ -96,8 +96,7 @@ struct SSignal {
 //+------------------------------------------------------------------+
 double ST(string symbol, int i = 0) {
     int handle = iCustom(symbol, IndTimeframe, I_ST, StPeriod, StMultiplier, false);
-    if (i == -1) return -1;
-    return Ind(handle, i, 2);
+    return IndOnce(handle, i, 2);
 }
 
 //+------------------------------------------------------------------+
@@ -152,7 +151,7 @@ void CheckForSignal() {
             double sl = BuySL(SLType, SLLookback, in, SLDev, 0, s, PERIOD_D1);
             double tp = in + TPCoef * MathAbs(in - sl);
             ea.BuyOpen(in, sl, tp, IgnoreSL, IgnoreTP, s);
-            Sleep(5000);
+            return;
         }
 
         if (stype == "sell") {
@@ -160,7 +159,7 @@ void CheckForSignal() {
             double sl = SellSL(SLType, SLLookback, in, SLDev, 0, s, PERIOD_D1);
             double tp = in - TPCoef * MathAbs(in - sl);
             ea.SellOpen(in, sl, tp, IgnoreSL, IgnoreTP, s);
-            Sleep(5000);
+            return;
         }
     }
 }

@@ -75,23 +75,41 @@ input ENUM_FILLING Filling = FILLING_DEFAULT; // Order Filling
 GerEA ea;
 datetime tc;
 string symbols[];
+int AOS_handles[];
+int MA_fast_handles[];
+int MA_slow_handles[];
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-double MA(string symbol, int ma_period, int i = -1) {
-    int handle = iMA(symbol, 0, ma_period, 0, MaMethod, MaPrice);
-    if (i == -1) return -1;
-    return Ind(handle, i);
+int FindSymbolIndex(const string symbol) {
+    const int n = ArraySize(symbols);
+    for (int i = 0; i < n; i++)
+        if (symbols[i] == symbol)
+            return i;
+    return -1;
 }
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-double AOS(string symbol, ENUM_AOS_BI bi = 0, int i = -1) {
-    int handle = iCustom(symbol, 0, I_AOS, AosPeriod, AosSignalPeriod);
-    if (i == -1) return -1;
-    return Ind(handle, i, bi);
+double MA(string symbol, int ma_period, int i = 0) {
+    const int idx = FindSymbolIndex(symbol);
+    if (idx < 0) return -1;
+    if (ma_period == FastMaPeriod)
+        return Ind(MA_fast_handles[idx], i);
+    if (ma_period == SlowMaPeriod)
+        return Ind(MA_slow_handles[idx], i);
+    return -1;
+}
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+double AOS(string symbol, ENUM_AOS_BI bi = 0, int i = 0) {
+    const int idx = FindSymbolIndex(symbol);
+    if (idx < 0) return -1;
+    return Ind(AOS_handles[idx], i, bi);
 }
 
 //+------------------------------------------------------------------+
@@ -134,15 +152,15 @@ void CheckForSignal() {
             double sl = BuySL(SLType, SLLookback, in, SLDev, 0, s);
             double tp = in + TPCoef * MathAbs(in - sl);
             ea.BuyOpen(in, sl, tp, IgnoreSL, IgnoreTP, s);
-            Sleep(5000);
+            return;
         }
 
-        else if (sc) {
+        if (sc) {
             double in = Bid(s);
             double sl = SellSL(SLType, SLLookback, in, SLDev, 0, s);
             double tp = in - TPCoef * MathAbs(in - sl);
             ea.SellOpen(in, sl, tp, IgnoreSL, IgnoreTP, s);
-            Sleep(5000);
+            return;
         }
 
     }
@@ -175,11 +193,18 @@ int OnInit() {
     fillSymbols(symbols, MultipleSymbol, Symbols);
 
     int n = ArraySize(symbols);
+    ArrayResize(AOS_handles, n);
+    ArrayResize(MA_fast_handles, n);
+    ArrayResize(MA_slow_handles, n);
     for (int i = 0; i < n; i++) {
         string s = symbols[i];
-        AOS(s);
-        MA(s, FastMaPeriod);
-        MA(s, SlowMaPeriod);
+        AOS_handles[i] = iCustom(s, 0, I_AOS, AosPeriod, AosSignalPeriod);
+        MA_fast_handles[i] = iMA(s, 0, FastMaPeriod, 0, MaMethod, MaPrice);
+        MA_slow_handles[i] = iMA(s, 0, SlowMaPeriod, 0, MaMethod, MaPrice);
+        if (AOS_handles[i] == INVALID_HANDLE || MA_fast_handles[i] == INVALID_HANDLE || MA_slow_handles[i] == INVALID_HANDLE) {
+            PrintFormat("Runtime error creating handles for %s = %d", s, GetLastError());
+            return INIT_FAILED;
+        }
     }
 
     EventSetTimer(TimerInterval);
@@ -191,6 +216,12 @@ int OnInit() {
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason) {
     EventKillTimer();
+    const int n = ArraySize(AOS_handles);
+    for (int i = 0; i < n; i++) {
+        if (AOS_handles[i] != INVALID_HANDLE) IndicatorRelease(AOS_handles[i]);
+        if (MA_fast_handles[i] != INVALID_HANDLE) IndicatorRelease(MA_fast_handles[i]);
+        if (MA_slow_handles[i] != INVALID_HANDLE) IndicatorRelease(MA_slow_handles[i]);
+    }
 }
 
 //+------------------------------------------------------------------+

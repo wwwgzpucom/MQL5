@@ -158,6 +158,8 @@ int OnInit() {
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason) {
     EventKillTimer();
+    if (BB_handle != INVALID_HANDLE) IndicatorRelease(BB_handle);
+    if (RSI_handle != INVALID_HANDLE) IndicatorRelease(RSI_handle);
 }
 
 //+------------------------------------------------------------------+
