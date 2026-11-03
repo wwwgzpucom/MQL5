@@ -2,6 +2,11 @@
 
 MetaTrader 5（MQL5）相关源码仓库。
 
+## 适用平台
+
+本仓库中的财经日历指标适用于 **Exness** 平台（MetaTrader 5）。  
+开户 / 访问：[https://one.toexness.com/intl/zh/a/30852](https://one.toexness.com/intl/zh/a/30852)
+
 ## 目录
 
 | 路径 | 说明 |
@@ -12,7 +17,7 @@ MetaTrader 5（MQL5）相关源码仓库。
 
 ### 财经日历
 
-主图信息类指标，展示北京时间当日 USD 相关经济事件。
+主图信息类指标，展示北京时间当日 USD 相关经济事件。适用于 Exness MT5。
 
 - [`指标/EconomicCalendar.mq5`](./指标/EconomicCalendar.mq5) — 基础版
 - [`指标/EconomicCalendarAdvanced.mq5`](./指标/EconomicCalendarAdvanced.mq5) — 增强版（预期/前值、分色等）
