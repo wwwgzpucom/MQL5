@@ -4,8 +4,6 @@
 
 适用于 **Exness** MT5。开户：[https://one.toexness.com/intl/zh/a/30852](https://one.toexness.com/intl/zh/a/30852)
 
-原项目：[sberkeo/ForexUltimateTradePanel](https://github.com/sberkeo/ForexUltimateTradePanel)（fork 整理，仅保留 `.mq5` 源码）。
-
 ## 文件
 
 | 文件 | 说明 |
@@ -34,5 +32,3 @@
 
 `Copyright 2026, wwwgzpucom`  
 链接：[https://one.toexness.com/intl/zh/a/30852](https://one.toexness.com/intl/zh/a/30852)
-
-使用前请充分回测与风控；不构成投资建议。

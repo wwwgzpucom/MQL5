@@ -2,7 +2,6 @@
 
 适用于 **Exness** MT5。开户：[https://one.toexness.com/intl/zh/a/30852](https://one.toexness.com/intl/zh/a/30852)
 
-来源：[wwwgzpucom/metatrader5](https://github.com/wwwgzpucom/metatrader5)（fork 自 geraked/metatrader5，MIT）  
 本目录**只保留源码**，不含任何 `.ex5` 编译文件。  
 **每个分类文件夹内另有 README，说明该目录下各策略逻辑与依赖。**
 
@@ -22,4 +21,4 @@
 - `_依赖指标/`：配套自定义指标 `.mq5`
 - `_依赖库/`：`Include` 下的 `.mqh`
 
-MT5 可运行副本：`MQL5/Experts/策略EA/`、`MQL5/Indicators/策略EA依赖/`、`MQL5/Include/策略EA/`。
+安装：将 EA 放到 `MQL5/Experts/`，指标放到 `MQL5/Indicators/`，库放到 `MQL5/Include/` 后编译。
