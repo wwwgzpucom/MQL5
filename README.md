@@ -4,7 +4,7 @@ MetaTrader 5（MQL5）相关源码仓库。
 
 ## 适用平台
 
-本仓库指标与 EA 适用于 **Exness** 平台（MetaTrader 5）。  
+本仓库指标与 EA、交易面板适用于 **Exness** 平台（MetaTrader 5）。  
 开户 / 访问：[https://one.toexness.com/intl/zh/a/30852](https://one.toexness.com/intl/zh/a/30852)
 
 ## 目录
@@ -13,6 +13,7 @@ MetaTrader 5（MQL5）相关源码仓库。
 |------|------|
 | [`指标/`](./指标/) | 自定义指标（财经日历） |
 | [`EA/`](./EA/) | 策略 EA（按类型分类） |
+| [`交易面板/`](./交易面板/) | 交易面板 |
 
 ## 指标
 
@@ -24,6 +25,10 @@ MetaTrader 5（MQL5）相关源码仓库。
 ## EA
 
 分类策略源码见 [`EA/README.md`](./EA/README.md)。
+
+## 交易面板
+
+见 [`交易面板/README.md`](./交易面板/README.md)。
 
 ## 本地使用
 
